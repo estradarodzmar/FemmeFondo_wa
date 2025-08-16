@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Misión & Visión | FemmeFondo</title>
+
+  <!-- Bootstrap y Fonts -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
+  <!-- Estilos personalizados -->
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #fdf2f8;
+    }
+
+    .hero {
+      padding: 4rem 0;
+      text-align: center;
+      background: #fff0f5;
+      position: relative;
+    }
+
+    .hero .icono {
+      font-size: 3rem;
+      color: #FF1493;
+      margin-block-end: 15px;
+      transition: transform 0.3s ease;
+    }
+
+    .hero:hover .icono {
+      transform: scale(1.2);
+    }
+
+    .hero h1 {
+      font-size: 2rem;
+      font-weight: 600;
+      color: #a278a2;
+      margin-block-start: 15px;
+    }
+
+    .hero p.lead {
+      font-size: 1.2rem;
+      color: #6c556c;
+      margin-block-start: 10px;
+    }
+
+    h2 {
+      position: relative;
+      font-weight: 600;
+      margin-block-end: 1rem;
+      overflow: hidden;
+      color: #a278a2;
+    }
+
+    h2::after {
+      content: "";
+      position: absolute;
+      inset-block-start: 0;
+      inset-inline-start: -100%;
+      inline-size: 100%;
+      block-size: 100%;
+      background: linear-gradient(120deg, transparent, #FF69B4, transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      100% {
+        inset-inline-start: 100%;
+      }
+    }
+
+    .card-box {
+      background-color: #ffe6f0;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 0 20px rgba(255, 105, 180, 0.4);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card-box:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 0 30px rgba(255, 20, 147, 0.5);
+    }
+
+    .btn-pink {
+      background-color: #FF1493;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      transition: background-color 0.3s, transform 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-pink:hover {
+      background-color: #e01382;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <!-- Hero -->
+  <div class="hero" data-aos="fade-down" data-aos-delay="200">
+    <i class="bi bi-target icono"></i>
+    <h1 class="maquina"></h1>
+    <p class="lead">Descubre nuestra misión y visión.</p>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="container py-5">
+    <div class="row g-4">
+      <div class="col-md-6" data-aos="fade-up" data-aos-delay="150">
+        <div class="card-box">
+          <h2>Misión</h2>
+          <p>Empoderar financieramente a las mujeres, brindándoles una plataforma segura y educativa que facilite el manejo inteligente de sus recursos, fomentando la autonomía económica y el desarrollo personal.</p>
+        </div>
+      </div>
+      <div class="col-md-6" data-aos="fade-up" data-aos-delay="250">
+        <div class="card-box">
+          <h2>Visión</h2>
+          <p>Ser la aplicación de referencia en finanzas personales para mujeres en Latinoamérica, reconocida por su impacto educativo, su enfoque inclusivo y su contribución al cierre de la brecha de género en el ámbito financiero.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <script>
+    AOS.init();
+
+    const texto = "“Cada paso cuenta hacia tu libertad financiera”";
+    const elemento = document.querySelector(".maquina");
+    let i = 0;
+    function escribir() {
+      if (i < texto.length) {
+        elemento.innerHTML += texto.charAt(i);
+        i++;
+        setTimeout(escribir, 60);
+      }
+    }
+    elemento.innerHTML = "";
+    escribir();
+  </script>
+</body>
+</html>

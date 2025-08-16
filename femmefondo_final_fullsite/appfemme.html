@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="es">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>FemmeFondo - App Completa</title>
+<style>
+   /* Reset y base */
+   * {
+    box-sizing: border-box;
+  }
+  body, html {
+    margin: 0; padding: 0;
+    block-size: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #fef0ff;
+    overflow-x: hidden;
+  }
+
+  /* Contenedor app móvil */
+  .app {
+    max-inline-size: 375px;
+    inline-size: 100%;
+    block-size: 100vh;
+    margin: 0 auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* Header */
+  header {
+    background: linear-gradient(135deg, #be70c9, #984caf);
+    color: white;
+    padding: 1rem;
+    text-align: center;
+    user-select: none;
+    position: relative;
+    z-index: 5;
+  }
+  header h1 {
+    margin: 0 0 0.2rem 0;
+    font-weight: 700;
+  }
+  header p {
+    margin: 0;
+    font-weight: 400;
+    font-size: 0.9rem;
+  }
+
+  /* Botón hamburguesa */
+  #btnMenu {
+    position: absolute;
+    inset-inline-start: 1rem;
+    inset-block-start: 1.2rem;
+    inline-size: 30px;
+    block-size: 22px;
+    cursor: pointer;
+    z-index: 10;
+  }
+  #btnMenu div {
+    block-size: 4px;
+    background: white;
+    margin: 4px 0;
+    border-radius: 3px;
+    transition: all 0.3s;
+  }
+  #btnMenu.open div:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+  }
+  #btnMenu.open div:nth-child(2) {
+    opacity: 0;
+  }
+  #btnMenu.open div:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px);
+  }
+
+  /* Menu lateral */
+  nav {
+    position: fixed;
+    inset-block-start: 0; inset-inline-start: 0;
+    inline-size: 250px;
+    block-size: 100vh;
+    background: #be70c9;
+    padding-block-start: 80px;
+    transform: translateX(-260px);
+    transition: transform 0.3s ease;
+    z-index: 9;
+    border-radius: 0 20px 20px 0;
+  }
+  nav.open {
+    transform: translateX(0);
+  }
+  nav button {
+    inline-size: 100%;
+    padding: 1rem 1.5rem;
+    border: none;
+    background: transparent;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-align: start;
+    cursor: pointer;
+    border-inline-start: 5px solid transparent;
+    transition: background-color 0.3s, border-color 0.3s;
+  }
+  nav button.active, nav button:hover {
+    background-color: #a353c7;
+    border-inline-start: 5px solid white;
+  }
+
+  /* Contenido principal */
+  main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    margin-inline-start: 0;
+    transition: margin-left 0.3s ease;
+  }
+  main.shifted {
+    margin-inline-start: 250px;
+  }
+
+  section {
+    display: none;
+    max-inline-size: 100%;
+  }
+  section.active {
+    display: block;
+  }
+
+  h2.section-title {
+    color: #5c2d91;
+    font-weight: 700;
+    margin-block-end: 1rem;
+    user-select: none;
+  }
+
+  /* General inputs y botones */
+  input[type=text], input[type=number], input[type=date], select {
+    inline-size: 100%;
+    padding: 0.5rem 0.7rem;
+    margin-block-end: 0.7rem;
+    border: 1.8px solid #c6a0dd;
+    border-radius: 12px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  input[type=text]:focus, input[type=number]:focus, input[type=date]:focus, select:focus {
+    border-color: #7e44b8;
+  }
+  button {
+    background: #7e44b8;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    padding: 0.7rem 1.3rem;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  button:hover {
+    background: #9a59d1;
+  }
+
+  /* Cards para mostrar listas */
+  .card {
+    background: #e6d4fa;
+    border-radius: 14px;
+    padding: 0.8rem;
+    margin-block-end: 0.7rem;
+    box-shadow: 1px 1px 5px rgba(124, 76, 182, 0.2);
+    font-size: 0.9rem;
+    border-inline: 2px solid #be70c9;
+  }
+  .card strong {
+    color: #5c2d91;
+  }
+
+  progress {
+    inline-size: 100%;
+    block-size: 14px;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-block-start: 0.4rem;
+    appearance: none;
+  }
+
+  /* Gráficas */
+  canvas {
+    max-inline-size: 100%;
+    block-size: auto;
+    margin-block-end: 1rem;
+  }
+
+  /* Sección Educación */
+  video {
+    inline-size: 100%;
+    block-size: auto;
+    border-radius: 14px;
+    box-shadow: 0 0 10px rgba(124, 76, 182, 0.3);
+    margin-block-end: 0.7rem;
+  }
+
+  .quiz {
+    background: #f3d7ff;
+    border-radius: 14px;
+    padding: 1rem;
+    font-size: 0.9rem;
+    margin-block-start: 1rem;
+  }
+  .quiz p {
+    font-weight: 600;
+  }
+  .badge {
+    background: #b494e7;
+    color: white;
+    padding: 0.4rem 0.7rem;
+    border-radius: 12px;
+    display: inline-block;
+    margin-block-start: 0.5rem;
+    user-select: none;
+  }
+
+  /* Scrollbar */
+  main::-webkit-scrollbar {
+    inline-size: 7px;
+  }
+  main::-webkit-scrollbar-thumb {
+    background-color: #be70c9;
+    border-radius: 10px;
+  }
+
+  /* NUEVAS SECCIONES */
+  /* Sección Perfil */
+  #perfil img {
+    inline-size: 100px;
+    block-size: 100px;
+    border-radius: 50%;
+    display: block;
+    margin: 1rem auto;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  #perfil p {
+    text-align: center;
+    font-size: 1rem;
+    margin: 0.3rem 0;
+  }
+
+  /* Sección Plan */
+  #plan ul {
+    padding-inline-start: 1.2rem;
+    margin-block: 1rem;
+  }
+  #plan li {
+    margin-block: 0.3rem;
+    color: #5c2d91;
+    list-style: disc;
+  }
+
+  /* Sección Configuración */
+  #configuracion label {
+    display: block;
+    margin: 0.7rem 0;
+    font-size: 0.95rem;
+  }
+  #configuracion input[type="checkbox"] {
+    margin-inline-end: 0.5rem;
+  }
+  #configuracion button {
+    display: block;
+    margin: 0.5rem 0;
+  }
+
+  /* MODO OSCURO COMPLETO */
+  body.dark {
+    background: #1c1c1c;
+    color: #ddd;
+  }
+  body.dark .app {
+    background: #2b2b2b;
+    box-shadow: none;
+  }
+  body.dark header {
+    background: linear-gradient(135deg, #4c2b5b, #632f7a);
+  }
+  body.dark nav {
+    background: #632f7a;
+  }
+  body.dark nav button:hover, body.dark nav button.active {
+    background: #8753b6;
+    border-inline-start-color: #ddd;
+  }
+  body.dark input, body.dark select {
+    background: #444;
+    color: #ddd;
+    border-color: #8753b6;
+  }
+  body.dark button {
+    background: #8753b6;
+  }
+  body.dark button:hover {
+    background: #a87ede;
+  }
+  body.dark .card {
+    background: #3e2a5f;
+    border-inline: 2px solid #be70c9;
+  }
+  body.dark progress {
+    background-color: #555;
+  }
+  body.dark #perfil p,
+  body.dark #plan p,
+  body.dark #plan li,
+  body.dark #configuracion label {
+    color: #ddd;
+  }
+  body.dark #perfil img {
+    box-shadow: 0 0 10px rgba(255,255,255,0.1);
+  }
+
+  /* Estilos específicos para la sección Calendario */
+  .calendar-container {
+    max-inline-size: 100%;
+    margin-block: 1rem;
+    border: 2px solid #be70c9;
+    border-radius: 14px;
+    background: #f9eaff;
+    padding: 1rem;
+  }
+  .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-block-end: 1rem;
+  }
+  .calendar-header button {
+    background: #7e44b8;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 0.5rem 1rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.3s;
+  }
+  .calendar-header button:hover,
+  .calendar-header button:focus {
+    background: #9a59d1;
+    outline: none;
+  }
+  #monthYear {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #5c2d91;
+    user-select: none;
+  }
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.3rem;
+  }
+  .day-name {
+    font-weight: 600;
+    color: #7e44b8;
+    text-align: center;
+    user-select: none;
+  }
+  .calendar-day {
+    aspect-ratio: 1 / 1;
+    background: white;
+    border-radius: 10px;
+    text-align: center;
+    line-height: 2.4rem;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    font-weight: 600;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  .calendar-day.today {
+    border: 3px solid #be70c9;
+  }
+  .calendar-day.selected {
+    background: #be70c9;
+    color: white;
+  }
+  .calendar-day.has-gastos::after {
+    content: '';
+    position: absolute;
+    inset-block-end: 5px;
+    inline-size: 6px;
+    block-size: 6px;
+    border-radius: 50%;
+    background: #7e44b8;
+    inset-inline-end: 6px;
+  }
+  .calendar-day:focus-visible {
+    outline: 3px solid #9a59d1;
+    outline-offset: 2px;
+  }
+  .day-info {
+    margin-block-start: 1rem;
+    background: white;
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 0 6px rgba(124, 76, 182, 0.3);
+    max-inline-size: 100%;
+  }
+  #selectedDate {
+    margin-block-end: 0.5rem;
+    color: #5c2d91;
+    font-weight: 700;
+    user-select: none;
+  }
+  #gastosDia {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 1rem 0;
+    max-block-size: 150px;
+    overflow-y: auto;
+    color: #5c2d91;
+  }
+  #gastosDia li {
+    margin-block-end: 0.3rem;
+    padding: 0.4rem 0.6rem;
+    background: #e6d4fa;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  #gastosDia li button {
+    background: transparent;
+    border: none;
+    color: #7e44b8;
+    cursor: pointer;
+    font-size: 1.1rem;
+    user-select: none;
+    padding: 0 0.2rem;
+    transition: color 0.3s;
+  }
+  #gastosDia li button:hover,
+  #gastosDia li button:focus {
+    color: #be70c9;
+    outline: none;
+  }
+  #formAgregarGasto {
+    display: flex;
+    flex-direction: column;
+  }
+  #formAgregarGasto input {
+    margin-block-end: 0.5rem;
+  }
+  #formAgregarGasto button {
+    align-self: center;
+    max-inline-size: 50%;
+  }
+
+</style>
+
+</head>
+
+
+<body>
+    <div class="app" role="application" aria-label="Aplicación FemmeFondo">
+      <header>
+        <div id="btnMenu" aria-label="Menú de navegación" role="button" tabindex="0" aria-expanded="false" aria-controls="navMenu">
+          <div></div><div></div><div></div>
+        </div>
+        <h1 style="margin: 0; font-family: 'Georgia', serif; font-size: 1.7rem; font-weight: 700; text-align: center; position: relative;">
+          FemmeFondo
+          <img src="Logo.png" alt="Logo" style="position: absolute; inset-inline-end: 0.5rem; inset-block-start: 0; inline-size: 36px; block-size: auto;" />
+        </h1>
+        <p>Gestión Financiera para Mujeres</p>
+        <p>Tu dinero, Tu fuerza 💪🏻💵</p>
+      </header>
+  
+      <nav id="navMenu" aria-label="Menú de navegación">
+        <button data-section="inicio" class="active">Inicio</button>
+        <button data-section="midinero">Mi Dinero</button>
+        <button data-section="presupuesto">Presupuesto</button>
+        <button data-section="plan">Plan</button>
+        <button data-section="calendario">Calendario</button>
+        <button data-section="metas">Metas</button>
+        <button data-section="educacion">Educación</button>
+        <button data-section="herramientas">Herramientas</button>
+        <button data-section="comunidad">Comunidad</button>
+        <button data-section="perfil">Perfil</button>
+        <button data-section="configuracion">Configuración</button>
+        <button id="btnCerrarMenu" style="margin-block-start:auto; background:#5a2e8a; color:white;">Cerrar Menú</button>
+      </nav>
+      <main tabindex="0">
+        <section id="inicio" class="active" role="region" aria-labelledby="inicioTitle">
+          <h2 id="inicioTitle" class="visually-hidden">Página de inicio FemmeFondo</h2>
+        
+          <!-- Bienvenida y avatar -->
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-block-end: 1rem;">
+            <div>
+              <h3 style="margin: 0; font-size: 1.2rem;">Bienvenida de nuevo, Ana!</h3>
+              <p style="margin: 0.2rem 0; color: #7e44b8;">¡Nos alegra tenerte aquí!</p>
+            </div>
+            <img src="avatar.png" alt="Foto de perfil de Ana" style="inline-size: 50px; block-size: 50px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 4px rgba(0,0,0,0.1);" />
+          </div>
+        
+          <!-- Tarjetas tipo dashboard informativo -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-block: 1.5rem;">
+            <div class="card" aria-label="Resumen de ingresos">
+              <strong>💰 Ingresos</strong><br>
+              Este mes: $12,000.00
+            </div>
+            <div class="card" aria-label="Resumen de gastos">
+              <strong>📉 Gastos</strong><br>
+              Este mes: $7,500.00
+            </div>
+            <div class="card" aria-label="Resumen de ahorros">
+              <strong>💎 Ahorros</strong><br>
+              Total acumulado: $4,500.00
+            </div>
+            <!-- Tarjeta funcional del calendario -->
+            <div 
+              class="card boton-calendario" 
+              role="button" 
+              tabindex="0" 
+              aria-label="Abrir Calendario Financiero" 
+              title="Haz click para abrir el Calendario Financiero"
+              style="cursor: pointer; user-select: none;"
+            >
+              <strong>📆 Calendario Financiero</strong><br>
+              Controla tus gastos con recordatorios inteligentes.
+            </div>
+          </div>
+        
+          <p style="margin-block-start:1rem; font-style: italic; color: #6a3f9a;">"Tu dinero, tu fuerza."</p>
+        </section>
+        
+        <!-- MI DINERO -->
+        <section id="midinero" role="region" aria-label="Mi Dinero">
+          <h2>Mi Dinero - Ingresos y Gastos</h2>
+          <form id="formDinero">
+            <label for="tipoMovimiento">Tipo:</label>
+            <select id="tipoMovimiento" required>
+              <option value="">Selecciona tipo</option>
+              <option value="ingreso">Ingreso</option>
+              <option value="gasto">Gasto</option>
+            </select>
+  
+            <label for="categoriaMovimiento">Categoría:</label>
+            <select id="categoriaMovimiento" required>
+              <option value="alimentacion">Alimentación</option>
+              <option value="transporte">Transporte</option>
+              <option value="servicios">Servicios</option>
+              <option value="salud">Salud</option>
+              <option value="entretenimiento">Entretenimiento</option>
+            </select>
+  
+            <input type="text" id="nuevaCategoria" placeholder="Nueva categoría" aria-label="Nueva categoría" style="margin-block-start:0.5rem;"/>
+            <button type="button" id="btnAgregarCategoria" style="margin-block-end: 1rem;">+ Añadir categoría</button>
+  
+            <label for="montoMovimiento">Monto ($):</label>
+            <input type="number" id="montoMovimiento" min="0.01" step="0.01" required />
+  
+            <button type="submit">Agregar</button>
+          </form>
+          <div>
+            <h3>Gastos e ingresos registrados</h3>
+            <div id="listaMovimientos" style="max-block-size: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 0.5rem;"></div>
+          </div>
+          <canvas id="graficaCategorias" width="350" height="200" style="margin-block-start:1rem;"></canvas>
+        </section>
+  
+        <!-- PRESUPUESTO -->
+        <section id="presupuesto" role="region" aria-label="Presupuesto Personalizado">
+          <h2>Presupuesto Personalizado</h2>
+          <form id="formPresupuesto">
+            <label for="presupuestoTotal">Presupuesto total mensual ($):</label>
+            <input type="number" id="presupuestoTotal" min="0" step="0.01" required />
+            <ul>
+              <li>50% Necesidades</li>
+              <li>30% Gustos</li>
+              <li>20% Ahorro</li>
+            </ul>
+            <button type="submit">Guardar Presupuesto</button>
+            <div id="alertaPresupuesto" style="display:none; margin-block-start: 1rem;"></div>
+          </form>
+          <canvas id="graficaPresupuesto" width="350" height="200" style="margin-block-start:1rem;"></canvas>
+        </section>
+  
+        <!-- PLAN -->
+        <section id="plan" role="region" aria-label="Planes y suscripciones">
+          <h2>Plan</h2>
+          <p>Elige el plan que más se ajuste a tus necesidades:</p>
+          <ul>
+            <li><strong>Gratuito:</strong> Funcionalidades básicas.</li>
+            <li><strong>Premium:</strong> Acceso completo a todas las herramientas, reportes y soporte.</li>
+          </ul>
+        </section>
+  
+        <!-- CALENDARIO -->
+        <section id="calendario" class="section">
+          <h2 class="section-title">Calendario Financiero</h2>
+          <div class="calendar-container">
+            <div class="calendar-header">
+              <button id="prevMonth" aria-label="Mes anterior">&lt;</button>
+              <h3 id="monthYear" aria-live="polite"></h3>
+              <button id="nextMonth" aria-label="Mes siguiente">&gt;</button>
+            </div>
+            <div class="calendar-grid" role="grid" aria-labelledby="monthYear" tabindex="0">
+              <div class="day-name">Dom</div>
+              <div class="day-name">Lun</div>
+              <div class="day-name">Mar</div>
+              <div class="day-name">Mié</div>
+              <div class="day-name">Jue</div>
+              <div class="day-name">Vie</div>
+              <div class="day-name">Sáb</div>
+            </div>
+        
+            <div class="day-info" aria-live="polite" aria-atomic="true">
+              <h4 id="selectedDate">Selecciona un día</h4>
+              <ul id="gastosDia" aria-label="Gastos del día"></ul>
+        
+              <form id="formAgregarGasto" aria-label="Agregar gasto al día">
+                <h5>Agregar gasto</h5>
+                <input type="text" id="nombreGasto" placeholder="Descripción" required />
+                <input type="number" id="montoGasto" placeholder="Monto $" min="0.01" step="0.01" required />
+                <button type="submit">Guardar gasto</button>
+              </form>
+            </div>
+          </div>
+        </section>
+  
+        <!-- METAS -->
+        <section id="metas" role="region" aria-label="Metas de Ahorro">
+          <h2>Metas de Ahorro</h2>
+          <form id="formMeta">
+            <label for="nombreMeta">Nombre de la meta:</label>
+            <input type="text" id="metaNombre" required />
+            <label for="metaMonto">Monto objetivo ($):</label>
+            <input type="number" id="montoMeta" min="0.01" step="0.01" required />
+            <label for="metaFecha">Fecha límite:</label>
+            <input type="date" id="metaFecha" required />
+            <button type="submit">Agregar Meta</button>
+          </form>
+          <div id="listaMetas"></div>
+        </section>
+  
+        <!-- EDUCACION -->
+        <section id="educacion" role="region" aria-label="Educación Financiera">
+          <h2>Educación Financiera</h2>
+          <div class="video-container" style="margin-block-end:1rem;">
+            <iframe width="100%" height="200"
+              src="https://www.youtube.com/embed/X38MGyuc0ds"
+              title="Video educativo sobre presupuesto"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen>
+            </iframe>
+          </div>
+          <p>¿Qué porcentaje del presupuesto se recomienda destinar a necesidades básicas?</p>
+          <select id="respuestaQuiz">
+            <option value="">Selecciona una opción</option>
+            <option value="30">30%</option>
+            <option value="40">40%</option>
+            <option value="50">50%</option>
+            <option value="60">60%</option>
+          </select>
+          <button id="btnVerificarQuiz">Verificar</button>
+          <p id="resultadoQuiz" aria-live="polite"></p>
+        </section>
+  
+        <!-- HERRAMIENTAS -->
+        <section id="herramientas" role="region" aria-label="Herramientas">
+          <h2>Herramientas</h2>
+          <form id="formCalculadora">
+            <label for="montoAhorrar">Monto a ahorrar ($):</label>
+            <input type="number" id="montoAhorrar" min="0.01" step="0.01" required />
+            <label for="plazoMeses">Plazo en meses:</label>
+            <input type="number" id="plazoMeses" min="1" step="1" required />
+            <button type="submit">Calcular ahorro mensual</button>
+          </form>
+          <p id="resultadoCalculadora" aria-live="polite"></p>
+        </section>
+  
+        <!-- COMUNIDAD -->
+        <section id="comunidad" role="region" aria-label="Comunidad FemmeFondo">
+          <h2>Comunidad FemmeFondo</h2>
+          <p>Únete a nuestra comunidad solidaria donde compartimos retos, foros y actividades para crecer juntas.</p>
+          <a href="index.html" class="btn btn-pink btn-lg mt-3">
+            EXPLORA NUESTRA PAGINA
+          </a>
+        </section>
+  
+        <!-- PERFIL -->
+        <section id="perfil" role="region" aria-label="Perfil de Usuario">
+          <h2>Perfil de Usuaria</h2>
+          <p>Información personal y configuración básica de la usuaria.</p>
+          <form onsubmit="guardarPerfil(); return false;">
+            <label for="nombreUsuario">Nombre completo:</label>
+            <input type="text" id="nombreUsuario" placeholder="Tu nombre" required />
+  
+            <label for="ocupacion">Ocupación:</label>
+            <input type="text" id="ocupacion" placeholder="Ej. Estudiante, Profesora" required />
+  
+            <label for="correo">Correo electrónico:</label>
+            <input type="email" id="correo" placeholder="email@ejemplo.com" required />
+  
+            <label for="idioma">Idioma:</label>
+            <select id="idioma" required>
+              <option value="es">Español</option>
+              <option value="en">Inglés</option>
+              <option value="fr">Francés</option>
+            </select>
+  
+            <label for="temaVisual">Tema visual:</label>
+            <select id="temaVisual" required>
+              <option value="claro">Claro</option>
+              <option value="oscuro">Oscuro</option>
+              <option value="automatico">Automático</option>
+            </select>
+  
+            <label for="metaFinanciera">Meta financiera principal:</label>
+            <input type="text" id="metaFinanciera" placeholder="Ej. Ahorrar para un viaje" />
+  
+            <button type="submit">Guardar Perfil</button>
+          </form>
+        </section>
+  
+        <!-- CONFIGURACION -->
+        <section id="configuracion" role="region" aria-label="Configuración de la App">
+          <h2>Configuración</h2>
+          <p>Preferencias y ajustes de la aplicación.</p>
+        </section>
+      </main>
+    </div>
+  
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const btnMenu = document.getElementById("btnMenu");
+        const navMenu = document.getElementById("navMenu");
+        const btnCerrarMenu = document.getElementById("btnCerrarMenu");
+        const botonesSecciones = navMenu.querySelectorAll("button[data-section]");
+        const secciones = document.querySelectorAll("main > section");
+  
+        function mostrarSeccion(id) {
+          secciones.forEach(sec => {
+            sec.style.display = (sec.id === id) ? "block" : "none";
+            sec.classList.toggle("active", sec.id === id);
+          });
+        }
+  
+        // Mostrar la sección activa al inicio
+        let activa = Array.from(secciones).find(sec => sec.classList.contains("active"));
+        mostrarSeccion(activa ? activa.id : secciones[0].id);
+  
+        // Menu hamburguesa toggle
+        btnMenu?.addEventListener("click", () => {
+          const expanded = btnMenu.getAttribute("aria-expanded") === "true";
+          btnMenu.setAttribute("aria-expanded", String(!expanded));
+          navMenu.classList.toggle("open");
+        });
+  
+        btnCerrarMenu?.addEventListener("click", () => {
+          navMenu.classList.remove("open");
+          btnMenu.setAttribute("aria-expanded", "false");
+        });
+  
+        // Navegación por secciones
+        botonesSecciones.forEach(btn => {
+          btn.addEventListener("click", () => {
+            const target = btn.dataset.section;
+            mostrarSeccion(target);
+  
+            botonesSecciones.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+  
+            navMenu.classList.remove("open");
+            btnMenu.setAttribute("aria-expanded", "false");
+          });
+        });
+  
+        // Botón calendario en inicio
+        document.querySelectorAll(".boton-calendario").forEach(btn => {
+          btn.addEventListener("click", () => {
+            mostrarSeccion("calendario");
+            botonesSecciones.forEach(b => b.classList.remove("active"));
+            const btnCal = Array.from(botonesSecciones).find(b => b.dataset.section === "calendario");
+            if (btnCal) btnCal.classList.add("active");
+            navMenu.classList.remove("open");
+            btnMenu.setAttribute("aria-expanded", "false");
+          });
+        });
+  
+        // --- Funcionalidades específicas de la app ---
+  
+        // --- Mi Dinero ---
+        const listaMovimientos = document.getElementById("listaMovimientos");
+        const tipoMovimiento = document.getElementById("tipoMovimiento");
+        const categoriaMovimiento = document.getElementById("categoriaMovimiento");
+        const montoMovimiento = document.getElementById("montoMovimiento");
+        const nuevaCategoria = document.getElementById("nuevaCategoria");
+        const btnAgregarCategoria = document.getElementById("btnAgregarCategoria");
+        const graficaCategorias = document.getElementById("graficaCategorias").getContext("2d");
+  
+        let movimientos = JSON.parse(localStorage.getItem("movimientos")) || [];
+        let categorias = ["alimentacion", "transporte", "servicios", "salud", "entretenimiento"];
+  
+        function actualizarListaMovimientos() {
+          listaMovimientos.innerHTML = "";
+          movimientos.forEach((mov, i) => {
+            const div = document.createElement("div");
+            div.textContent = `${mov.tipo.toUpperCase()} - ${mov.categoria} - $${mov.monto.toFixed(2)}`;
+            listaMovimientos.appendChild(div);
+          });
+        }
+  
+        function guardarMovimientos() {
+          localStorage.setItem("movimientos", JSON.stringify(movimientos));
+        }
+  
+        btnAgregarCategoria.addEventListener("click", () => {
+          const cat = nuevaCategoria.value.trim().toLowerCase();
+          if(cat && !categorias.includes(cat)) {
+            categorias.push(cat);
+            const option = document.createElement("option");
+            option.value = cat;
+            option.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
+            categoriaMovimiento.appendChild(option);
+            nuevaCategoria.value = "";
+            alert("Categoría añadida");
+          } else {
+            alert("Ingresa una categoría válida y que no exista");
+          }
+        });
+  
+        document.getElementById("formDinero").addEventListener("submit", e => {
+          e.preventDefault();
+          const tipo = tipoMovimiento.value;
+          const categoria = categoriaMovimiento.value;
+          const monto = parseFloat(montoMovimiento.value);
+          if (!tipo || !categoria || isNaN(monto) || monto <= 0) {
+            alert("Completa todos los campos correctamente");
+            return;
+          }
+          movimientos.push({ tipo, categoria, monto });
+          guardarMovimientos();
+          actualizarListaMovimientos();
+          actualizarGraficaCategorias();
+          e.target.reset();
+        });
+  
+        function actualizarGraficaCategorias() {
+          // Agrupar gastos (solo gastos) por categoría
+          const gastosPorCategoria = {};
+          movimientos.forEach(mov => {
+            if (mov.tipo === "gasto") {
+              gastosPorCategoria[mov.categoria] = (gastosPorCategoria[mov.categoria] || 0) + mov.monto;
+            }
+          });
+          const labels = Object.keys(gastosPorCategoria);
+          const data = Object.values(gastosPorCategoria);
+  
+          if(window.graficaPastel) window.graficaPastel.destroy();
+  
+          window.graficaPastel = new Chart(graficaCategorias, {
+            type: 'pie',
+            data: {
+              labels: labels,
+              datasets: [{
+                data: data,
+                backgroundColor: labels.map(() => '#' + Math.floor(Math.random()*16777215).toString(16))
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: {
+                  position: 'bottom',
+                }
+              }
+            }
+          });
+        }
+  
+        actualizarListaMovimientos();
+        actualizarGraficaCategorias();
+  
+        // --- Presupuesto ---
+        const formPresupuesto = document.getElementById('formPresupuesto');
+        const alertaPresupuesto = document.getElementById('alertaPresupuesto');
+        const graficaPresupuesto = document.getElementById("graficaPresupuesto").getContext("2d");
+  
+        let presupuestoTotal = parseFloat(localStorage.getItem('presupuestoTotal')) || 0;
+  
+        function mostrarPresupuesto() {
+          document.getElementById('presupuestoTotal').value = presupuestoTotal || "";
+          if(window.graficaBarra) window.graficaBarra.destroy();
+          if(presupuestoTotal > 0){
+            window.graficaBarra = new Chart(graficaPresupuesto, {
+              type: 'bar',
+              data: {
+                labels: ['Necesidades', 'Gustos', 'Ahorro'],
+                datasets: [{
+                  label: 'Porcentaje del presupuesto',
+                  data: [presupuestoTotal*0.5, presupuestoTotal*0.3, presupuestoTotal*0.2],
+                  backgroundColor: ['#7e44b8', '#b080df', '#d1a3ff']
+                }]
+              },
+              options: {
+                responsive: true,
+                scales: {
+                  y: {
+                    beginAtZero: true
+                  }
+                }
+              }
+            });
+          }
+        }
+  
+        mostrarPresupuesto();
+  
+        formPresupuesto.addEventListener('submit', e => {
+          e.preventDefault();
+          const valor = parseFloat(document.getElementById('presupuestoTotal').value);
+          if (isNaN(valor) || valor <= 0) {
+            alertaPresupuesto.style.display = 'block';
+            alertaPresupuesto.textContent = 'Por favor, ingresa un presupuesto válido.';
+            return;
+          }
+          alertaPresupuesto.style.display = 'none';
+          presupuestoTotal = valor;
+          localStorage.setItem('presupuestoTotal', presupuestoTotal);
+          mostrarPresupuesto();
+          alert('Presupuesto guardado');
+          formPresupuesto.reset();
+        });
+  
+        // --- Calendario ---
+        // Implementa aquí la lógica del calendario según tu código original, con manejo de meses, días, gastos, etc.
+  
+        // --- Metas ---
+        const formMeta = document.getElementById("formMeta");
+        const listaMetas = document.getElementById("listaMetas");
+        let metas = JSON.parse(localStorage.getItem("metas")) || [];
+  
+        function mostrarMetas() {
+          listaMetas.innerHTML = "";
+          metas.forEach((meta, i) => {
+            const div = document.createElement("div");
+            div.textContent = `${meta.nombre} - $${meta.monto.toFixed(2)} - Fecha límite: ${meta.fecha}`;
+            listaMetas.appendChild(div);
+          });
+        }
+  
+        formMeta.addEventListener("submit", e => {
+          e.preventDefault();
+          const nombre = document.getElementById("metaNombre").value.trim();
+          const monto = parseFloat(document.getElementById("montoMeta").value);
+          const fecha = document.getElementById("metaFecha").value;
+          if (!nombre || isNaN(monto) || monto <= 0 || !fecha) {
+            alert("Completa todos los campos correctamente");
+            return;
+          }
+          metas.push({ nombre, monto, fecha });
+          localStorage.setItem("metas", JSON.stringify(metas));
+          mostrarMetas();
+          formMeta.reset();
+        });
+  
+        mostrarMetas();
+  
+        // --- Educación Financiera ---
+        const btnVerificarQuiz = document.getElementById("btnVerificarQuiz");
+        const respuestaQuiz = document.getElementById("respuestaQuiz");
+        const resultadoQuiz = document.getElementById("resultadoQuiz");
+  
+        btnVerificarQuiz.addEventListener("click", () => {
+          const respuesta = respuestaQuiz.value;
+          if (!respuesta) {
+            resultadoQuiz.textContent = "Por favor selecciona una opción.";
+            return;
+          }
+          if (respuesta === "50") {
+            resultadoQuiz.textContent = "¡Correcto! Se recomienda destinar el 50% a necesidades básicas.";
+          } else {
+            resultadoQuiz.textContent = "Incorrecto, intenta de nuevo.";
+          }
+        });
+  
+        // --- Herramientas ---
+        const formCalculadora = document.getElementById("formCalculadora");
+        const resultadoCalculadora = document.getElementById("resultadoCalculadora");
+  
+        formCalculadora.addEventListener("submit", e => {
+          e.preventDefault();
+          const monto = parseFloat(document.getElementById("montoAhorrar").value);
+          const plazo = parseInt(document.getElementById("plazoMeses").value);
+          if (isNaN(monto) || monto <= 0 || isNaN(plazo) || plazo <= 0) {
+            alert("Ingresa un plazo válido en meses.");
+            return;
+          }
+          const ahorroMensual = monto / plazo;
+          resultadoCalculadora.textContent = `Debes ahorrar $${ahorroMensual.toFixed(2)} cada mes durante ${plazo} meses.`;
+        });
+  
+        // --- Perfil ---
+        function guardarPerfil() {
+          const perfil = {
+            nombre: document.getElementById("nombreUsuario").value.trim(),
+            ocupacion: document.getElementById("ocupacion").value.trim(),
+            correo: document.getElementById("correo").value.trim(),
+            idioma: document.getElementById("idioma").value,
+            temaVisual: document.getElementById("temaVisual").value,
+            metaFinanciera: document.getElementById("metaFinanciera").value.trim()
+          };
+          localStorage.setItem("perfil", JSON.stringify(perfil));
+          alert("Perfil guardado");
+        }
+  
+        function cargarPerfil() {
+          const perfil = JSON.parse(localStorage.getItem("perfil"));
+          if (perfil) {
+            document.getElementById("nombreUsuario").value = perfil.nombre || "";
+            document.getElementById("ocupacion").value = perfil.ocupacion || "";
+            document.getElementById("correo").value = perfil.correo || "";
+            document.getElementById("idioma").value = perfil.idioma || "es";
+            document.getElementById("temaVisual").value = perfil.temaVisual || "claro";
+            document.getElementById("metaFinanciera").value = perfil.metaFinanciera || "";
+          }
+        }
+  
+        cargarPerfil();
+  
+      });
+    </script>
+  </body>
+  </html>
+  

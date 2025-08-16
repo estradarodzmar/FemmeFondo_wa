@@ -1,0 +1,80 @@
+
+:root {
+  --pink: #f28ab2;
+  --lilac: #a278a2;
+  --bg: #fdf2f8;
+  --box: #fff0f5;
+  --accent: #e0bbec;
+}
+body {
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg);
+  margin: 0;
+}
+h1, h2, h3 {
+  font-family: 'Playfair Display', serif;
+}
+.navbar {
+  background: var(--pink);
+}
+.navbar .nav-link {
+  color: white;
+}
+.navbar .nav-link:hover {
+  color: var(--accent);
+}
+.hero {
+  background: var(--box);
+  text-align: center;
+  padding: 4rem 1rem;
+}
+.hero h1 {
+  color: var(--lilac);
+  font-size: 3rem;
+}
+.hero p {
+  color: #555;
+  font-size: 1.25rem;
+}
+.card-box {
+  background: var(--box);
+  border-radius: 15px;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: 0.3s;
+}
+.card-box:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+.card-box .icono {
+  font-size: 2.5rem;
+  color: var(--lilac);
+  margin-bottom: 1rem;
+}
+.card-box h5 {
+  font-weight: bold;
+  margin: 0.5rem 0;
+}
+.card-box p {
+  color: #666;
+}
+footer {
+  background: #2c2c2c;
+  color: #ddd;
+  text-align: center;
+  padding: 2rem 1rem;
+}
+footer a {
+  color: #ddd;
+  margin: 0 0.5rem;
+  transition: 0.3s;
+}
+footer a:hover {
+  color: var(--pink);
+}
+@media (max-width:768px){
+  .hero h1{font-size:2.5rem;}
+  .card-box{padding:1.5rem;}
+}
